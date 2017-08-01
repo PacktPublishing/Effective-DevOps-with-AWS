@@ -1,0 +1,14 @@
+--- 
+- hosts: "{{ target | default('localhost') }}" 
+  become: yes 
+  roles: 
+    - nodejs 
+    - codedeploy 
+    - cloudwatch
+    - { role: awslogs, name: messages, file: /var/log/messages }    
+    - {        
+        role: awslogs,        
+        name: helloworld,        
+        file: /var/log/helloworld/helloworld.log,
+        datetime_format: "%Y-%m-%dT%H:%M:%S.%f"
+      }

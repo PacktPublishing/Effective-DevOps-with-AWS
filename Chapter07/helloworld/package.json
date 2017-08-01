@@ -1,0 +1,32 @@
+{
+  "name": "helloworld",
+  "version": "1.0.0",
+  "description": "",
+  "main": "helloworld.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nfelsen/helloworld.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nfelsen/helloworld/issues"
+  },
+  "homepage": "https://github.com/nfelsen/helloworld#readme",
+  "devDependencies": {
+    "mocha": "^2.5.3",
+    "zombie": "^3.0.15"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.92.0",
+    "winston": "^2.3.1",
+    "winston-firehose": "1.0.6"
+  }
+}

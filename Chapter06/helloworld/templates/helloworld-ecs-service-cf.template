@@ -1,0 +1,140 @@
+{
+    "Description": "Effective DevOps in AWS: ECS service - Helloworld",
+    "Parameters": {
+        "Tag": {
+            "Default": "latest",
+            "Description": "Tag to deploy",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ServiceRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ecs.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
+                ],
+                "Path": "/"
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "service": {
+            "Properties": {
+                "Cluster": {
+                    "Fn::ImportValue": {
+                        "Fn::Join": [
+                            "-",
+                            [
+                                {
+                                    "Fn::Select": [
+                                        0,
+                                        {
+                                            "Fn::Split": [
+                                                "-",
+                                                {
+                                                    "Ref": "AWS::StackName"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "cluster-id"
+                            ]
+                        ]
+                    }
+                },
+                "DesiredCount": 1,
+                "LoadBalancers": [
+                    {
+                        "ContainerName": "helloworld",
+                        "ContainerPort": 3000,
+                        "TargetGroupArn": {
+                            "Fn::ImportValue": {
+                                "Fn::Join": [
+                                    "-",
+                                    [
+                                        {
+                                            "Fn::Select": [
+                                                0,
+                                                {
+                                                    "Fn::Split": [
+                                                        "-",
+                                                        {
+                                                            "Ref": "AWS::StackName"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "alb-helloworld-target-group"
+                                    ]
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "Role": {
+                    "Ref": "ServiceRole"
+                },
+                "TaskDefinition": {
+                    "Ref": "task"
+                }
+            },
+            "Type": "AWS::ECS::Service"
+        },
+        "task": {
+            "Properties": {
+                "ContainerDefinitions": [
+                    {
+                        "Cpu": 256,
+                        "Image": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    ".dkr.ecr.",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    ".amazonaws.com",
+                                    "/",
+                                    {
+                                        "Fn::ImportValue": "helloworld-repo"
+                                    },
+                                    ":",
+                                    {
+                                        "Ref": "Tag"
+                                    }
+                                ]
+                            ]
+                        },
+                        "Memory": 32,
+                        "Name": "helloworld",
+                        "PortMappings": [
+                            {
+                                "ContainerPort": 3000
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Type": "AWS::ECS::TaskDefinition"
+        }
+    }
+}

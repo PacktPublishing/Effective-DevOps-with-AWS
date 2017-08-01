@@ -1,0 +1,34 @@
+---
+# tasks file for awslogs
+
+- name: install awslogs 
+  yum: 
+    name: awslogs 
+    state: present 
+
+- name: copy global configuration 
+  copy: 
+    src: awslogs.conf 
+    dest: /etc/awslogs 
+  notify: restart awslogs 
+
+- name: configure awslogs to collect {{ file }} 
+  ini_file: 
+    path: "/etc/awslogs/config/{{ name }}.conf" 
+    section: "{{ file }}" 
+    option: "{{ item.option }}" 
+    value: "{{ item.value }}"  
+  with_items: 
+    - { option: file, value: "{{ file }}" } 
+    - { option: log_group_name, value: "{{ file }}" } 
+    - { option: log_stream_name, value: "{instance_id}" } 
+    - { option: initial_position, value: "start_of_file" } 
+    - { option: buffer_duration, value: "5000" } 
+    - { option: datetime_format, value: "{{ datetime_format | default('%b %d %H:%M:%S') }}" }    
+  notify: restart awslogs 
+
+- name: start awslogs and enable it 
+  service: 
+    name: awslogs 
+    state: started 
+    enabled: yes 

@@ -1,0 +1,12 @@
+--- 
+# tasks file for cloudwatch 
+
+- name: Installing cloudwatchmon 
+  pip: 
+    name: cloudwatchmon
+
+- name: Execute cloudwatchmon every 5min 
+  cron: 
+    name: "cloudwatchmon" 
+    minute: "*/5" 
+    job: /usr/local/bin/mon-put-instance-stats.py --auto-scaling --loadavg-percpu --mem-util --disk-space-util --disk-path=/ --from-cron" 
