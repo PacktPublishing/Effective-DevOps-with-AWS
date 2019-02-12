@@ -52,7 +52,7 @@ ud = Base64(Join('\n', [
     "sudo yum install --enablerepo=epel -y nodejs",
     "wget http://bit.ly/2vESNuc -O /home/ec2-user/helloworld.js",
     "wget http://bit.ly/2vVvT18 -O /etc/init/helloworld.conf",
-    "start helloworld"
+    "sudo start helloworld"
 ]))
 
 t.add_resource(ec2.Instance(
